@@ -20,7 +20,7 @@ public class ReportService {
     private final ReportRepository reportRepository;
 
 // Crear los reportes
-    public ReportResponseDTO createreport (ReportRequestDTO request) throws Exception{
+    public ReportResponseDTO createReport (ReportRequestDTO request) throws Exception{
         // Crea el un objeto del id
         ReportId id = new ReportId();
         id.setIdPlayer(request.getIdPlayer());
@@ -57,36 +57,13 @@ public class ReportService {
         return  response;
     }
     
-// Extraer registros para mostrar titulares
-    public List<ReportResponseDTO> getAllreports() throws Exception{ // 7 total, 5 juegan
-
-        // Crea Array para lista de reportes
-        List<Reports> foundTrainings = reportRepository.findAll();
-
-        // Lista en la que se almacenara todos los jugadores
+    //Metodos para el get
+    
+    public List<ReportResponseDTO> createArrayPlayers(ReportResponseDTO report) throws Exception{
+        
         List<ReportResponseDTO> finalPointsList = new ArrayList<>();
 
-        // Ciclo para pasar registro por registro
-        for(Reports foundTraining : foundTrainings){
-            ReportResponseDTO report = new ReportResponseDTO();
-            report.setIdPlayer(foundTraining.getId().getIdPlayer());
-
-            // Revision si existe el jugador o no
-            Boolean alreadyExist= false;
-            for(ReportResponseDTO finalPoints : finalPointsList){
-                if(finalPoints.getIdPlayer().equals(foundTraining.getId().getIdPlayer())){
-                    alreadyExist= true;
-                    break;
-                }
-            }
-
-            //Si no existe se añade al array
-            if(alreadyExist){
-                continue;
-            }
-                
-            //Si el jugador tiene 3 entrenos acceso, sí no Error
-            if(reportRepository.countByIdIdPlayer(report.getIdPlayer()) == 3 ){
+        if(reportRepository.countByIdIdPlayer(report.getIdPlayer()) == 3 ){
 
                 // Hace uan liata que pasa por los ids de los jugadores
                 List<Reports> reportOnePlayer = reportRepository.findByIdIdPlayer(report.getIdPlayer());
@@ -117,16 +94,59 @@ public class ReportService {
             }else{
                 throw new Exception("Datos insuficientes");
             }
+            return finalPointsList;
+    }
 
+
+    public List<ReportResponseDTO> startingPlayersSelector(List<ReportResponseDTO> finalPointsList){
+        // Ordenado del array de mayor a menor por los untos totales  y mostrasndo los necesarios
             finalPointsList.sort((a, b) -> b.getFinalPoints().compareTo(a.getFinalPoints()));
 
             while (finalPointsList.size() > 5) {
                 finalPointsList.remove(finalPointsList.size() - 1);
             }
+            return  finalPointsList;     
+    } // 7 total, 5 juegan
+
+
+// Extraer registros para mostrar titulares
+    public List<ReportResponseDTO> getAllReports() throws Exception{ // 7 total, 5 juegan
+
+        // Crea Array para lista de reportes
+        List<Reports> foundTrainings = reportRepository.findAll();
+
+        // Lista en la que se almacenara todos los jugadores
+        List<ReportResponseDTO> finalPointsList = new ArrayList<>();
+
+        // Ciclo para pasar registro por registro
+        for(Reports foundTraining : foundTrainings){
+            ReportResponseDTO report = new ReportResponseDTO();
+            report.setIdPlayer(foundTraining.getId().getIdPlayer());
+
+            // Revision si existe el jugador o no
+            Boolean alreadyExist= false;
+            for(ReportResponseDTO finalPoints : finalPointsList){
+                if(finalPoints.getIdPlayer().equals(foundTraining.getId().getIdPlayer())){
+                    alreadyExist= true;
+                    break;
+                }
+            }
+
+            //Si no existe se añade al array
+            if(alreadyExist){
+                continue;
+            }
+                
+            // Metodo que añade los datos al array
+            createArrayPlayers(report);
+            finalPointsList.add(report);
+
+            // Metodo que selecciona los titulares
+            startingPlayersSelector(finalPointsList);
             
         }
+        
         return finalPointsList;
         
     }
-    
 }

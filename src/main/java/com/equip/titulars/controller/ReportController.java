@@ -26,14 +26,14 @@ public class ReportController {
     private final ReportService reportService;
 
     @PostMapping("/create")
-    public ResponseEntity<ReportResponseDTO> createreport(@RequestBody ReportRequestDTO request)throws Exception{
-        ReportResponseDTO response = reportService.createreport(request);
+    public ResponseEntity<ReportResponseDTO> createReport(@RequestBody ReportRequestDTO request)throws Exception{
+        ReportResponseDTO response = reportService.createReport(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/starting_players")
-    public ResponseEntity<List<ReportResponseDTO>> getAllreports() throws Exception{
-        List<ReportResponseDTO> response = reportService.getAllreports();
+    public ResponseEntity<List<ReportResponseDTO>> getAllReports() throws Exception{
+        List<ReportResponseDTO> response = reportService.getAllReports();
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }
