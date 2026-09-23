@@ -67,7 +67,7 @@ CREATE TABLE Equip (
     power          DOUBLE,
     speed          DOUBLE,
     passing        DOUBLE,
-    pointsTraining DOUBLE,
+    points_training DOUBLE,
     PRIMARY KEY (id_player, num_training)
 );
 ```
